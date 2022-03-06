@@ -2,10 +2,11 @@ import { Document, Model, model, Schema } from "mongoose";
 
 export interface IRestaurant extends Document {
   name: string;
+  code: string;
   age: number;
   location: string;
   website: string;
-  user_id: string;
+  user_id: Schema.Types.ObjectId;
 }
 
 const restaurantSchema = new Schema(
@@ -14,6 +15,11 @@ const restaurantSchema = new Schema(
       type: String,
       required: [true, "Restaurant name is required!"],
       trim: true,
+    },
+    code: {
+      type: String,
+      unique: true,
+      required: [true, "Restaurant code is required!"],
     },
     age: {
       type: Number,
@@ -30,7 +36,7 @@ const restaurantSchema = new Schema(
       trim: true,
     },
     user_id: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
     },
   },
@@ -38,6 +44,15 @@ const restaurantSchema = new Schema(
     timestamps: true,
   }
 );
+
+// to hide some information
+restaurantSchema.methods.toJSON = function () {
+  const restaurant = this;
+  const restaurantObj = restaurant.toObject();
+  delete restaurantObj.user_id;
+
+  return restaurantObj;
+};
 
 const restaurantModel: Model<IRestaurant> = model("Restaurant", restaurantSchema);
 
