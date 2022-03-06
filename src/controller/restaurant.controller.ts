@@ -5,6 +5,12 @@ import Restaurant from "../models/restaurant.model";
 import { IRestaurant } from "../models/restaurant.model";
 import Messages from "../config/Messages";
 
+/**
+ * get all restaurants
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export const fetchRestaurant = async (req: Request, res: Response) => {
   const restaurants = await Restaurant.find();
   return res.status(HttpStatusCodes.OK).send(restaurants);
