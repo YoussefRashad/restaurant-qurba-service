@@ -6,12 +6,15 @@ import { IRestaurant } from "../models/restaurant.model";
 
 export const fetchRestaurant = async (req: Request, res: Response) => {
   const restaurants = await Restaurant.find();
-  return res.status(HttpStatusCodes.ACCEPTED).send(restaurants);
+  return res.status(HttpStatusCodes.OK).send(restaurants);
 };
 export const getRestaurant = async (req: Request, res: Response) => {
   const { code }: { code: string } = req.body;
-  const restaurant = await getRestaurantOrFail(code);
-  return res.status(HttpStatusCodes.ACCEPTED).send(restaurant);
+  const restaurant = await get(code);
+  if (!restaurant) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).send();
+  }
+  return res.status(HttpStatusCodes.OK).send(restaurant);
 };
 export const searchRestaurant = async (req: Request, res: Response) => {
   const { query } = req.body;
@@ -27,7 +30,10 @@ export const searchRestaurant = async (req: Request, res: Response) => {
       },
     },
   ]);
-  return res.status(HttpStatusCodes.ACCEPTED).send(restaurants);
+  if (!restaurants.length) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).send();
+  }
+  return res.status(HttpStatusCodes.OK).send(restaurants);
 };
 
 export const createRestaurant = async (req: Request, res: Response) => {
@@ -41,7 +47,10 @@ export const editRestaurant = async (req: Request, res: Response) => {
     user_id,
     ...rest
   }: { code: string; user_id: string; rest: IRestaurant } = req.body;
-  const restaurant = await getRestaurantOrFail(code);
+  const restaurant = await get(code);
+  if (!restaurant) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).send();
+  }
   checkIfAuthorized(user_id, restaurant);
   await restaurant.updateOne(rest);
   return res.status(HttpStatusCodes.CREATED).send(restaurant);
@@ -49,18 +58,17 @@ export const editRestaurant = async (req: Request, res: Response) => {
 
 export const deleteRestaurant = async (req: Request, res: Response) => {
   const { code, user_id }: { code: string; user_id: string } = req.body;
-  const restaurant = await getRestaurantOrFail(code);
+  const restaurant = await get(code);
+  if (!restaurant) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).send();
+  }
   checkIfAuthorized(user_id, restaurant);
   await restaurant.delete();
-  return res.status(HttpStatusCodes.ACCEPTED).send(restaurant);
+  return res.status(HttpStatusCodes.OK).send(restaurant);
 };
 
-const getRestaurantOrFail = async (code: string) => {
-  const restaurant = await Restaurant.findOne({ code });
-  if (!restaurant) {
-    throw new Error("restaurant does not exist");
-  }
-  return restaurant;
+const get = async (code: string) => {
+  return await Restaurant.findOne({ code });
 };
 
 const checkIfAuthorized = (user_id: string, restaurant: IRestaurant) => {
