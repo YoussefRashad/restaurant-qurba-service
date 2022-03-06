@@ -1,4 +1,5 @@
 import { Document, Model, model, Schema } from "mongoose";
+import Messages from "../config/Messages";
 
 export interface IRestaurant extends Document {
   name: string;
@@ -13,31 +14,31 @@ const restaurantSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Restaurant name is required!"],
+      required: [true, Messages.restaurant.error.NAME_REQUIRED],
       trim: true,
     },
     code: {
       type: String,
       unique: true,
-      required: [true, "Restaurant code is required!"],
+      required: [true, Messages.restaurant.error.CODE_REQUIRED],
     },
     age: {
       type: Number,
-      required: [true, "User age is required!"],
+      required: [true, Messages.user.error.AGE_REQUIRED],
     },
     location: {
       type: String,
-      required: [true, "restaurant location is required!"],
+      required: [true, Messages.restaurant.error.LOCATION_REQUIRED],
       trim: true,
     },
     website: {
       type: String,
-      required: [true, "restaurant website is required!"],
+      required: [true, Messages.restaurant.error.WEBSITE_REQUIRED],
       trim: true,
     },
     user_id: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: [true, Messages.user.error.USER_ID_REQUIRED],
     },
   },
   {
