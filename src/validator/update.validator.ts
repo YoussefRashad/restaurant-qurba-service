@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const updateValidator = Joi.object({
+const UpdateValidator = Joi.object({
   user_id: Joi.string().required(),
   code: Joi.string().required(),
   name: Joi.string(),
@@ -9,4 +9,4 @@ const updateValidator = Joi.object({
   website: Joi.string()
 });
 
-export default updateValidator;
+export default UpdateValidator;
